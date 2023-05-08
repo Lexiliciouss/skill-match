@@ -1,35 +1,24 @@
-# from flask import Flask, render_template
-
-# app = Flask(__name__)
-
-# messages = [{'title': 'What is your name?',
-#              'content': '___________'},
-#             {'title': 'What skills do you normally use at work?',
-#              'content': '____________'},
-#             {'title': 'What skills would you like to learn?'
-#              'content': '____________'},       
-#              {'title': 'Time available?'
-#              'content': '____________'},       
-#             ]
-
-# @app.route('/')
-# def index():
-#     return render_template('index.html', messages=messages)
-
-from flask import Flask, render_template
+from flask import Flask, request
+import csv
 
 app = Flask(__name__)
 
-messages = [{'title': 'Full name',
-             'content': 'Answer:'},
-            {'title': 'What skills do you normally use at work?',
-             'content': 'Answer:'},
-             {'title': 'What skills would you like to learn?',
-             'content': 'Answer:'},
-             {'title': 'Time availability',
-             'content': 'Answer:'}
-            ]
+# define the endpoint
+@app.route('/survey_questions', methods=['POST'])
+def survey_questions():
+    # get user answers from the request
+    name = request.form.get('name')
+    skills_used = request.form.get('skills_used')
+    skills_to_learn = request.form.get('skills_to_learn')
+    time_available = request.form.get('time_available')
+    
+    # save user answers to a csv file
+    with open('user_responses.csv', mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([name, skills_used, skills_to_learn, time_available])
+    
+    # return a success message 
+    return 'Thanks for completing the survey!'
 
-@app.route('/')
-def index():
-    return render_template('index.html', messages=messages)
+if __name__ == '__main__':
+    app.run(debug=True)
